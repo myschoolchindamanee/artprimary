@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHINDAMANEE SCHOOL Art Competition 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.21/dist/vanta.fog.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Neue', cursive;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        #vanta-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: bounceIn 1.5s ease-out;
+        }
+        
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            color: #ff6b6b;
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0 #ffe66d, 5px 5px 0 rgba(0,0,0,0.1);
+            transform-style: preserve-3d;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        h2 {
+            color: #4ecdc4;
+            font-size: 2rem;
+            margin-top: 0;
+            text-shadow: 2px 2px 0 #fff;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #556270;
+            margin-bottom: 20px;
+        }
+        
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .class-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .class-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            border-color: #4ecdc4;
+        }
+        
+        .class-card h3 {
+            color: #ff6b6b;
+            font-size: 1.8rem;
+            margin-top: 0;
+            text-align: center;
+            font-family: 'Baloo 2', cursive;
+        }
+        
+        .student-list {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .student-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .student-item:hover {
+            background: #4ecdc4;
+            color: white;
+            transform: scale(1.02);
+        }
+        
+        .back-btn {
+            display: none;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .back-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .art-supplies {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.7;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .paint-palette {
+            top: 10%;
+            left: 5%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%23ff6b6b" d="M204.3 5C104.9 24.4 24.8 104.3 5.2 203.4c-37 187 131.7 326.4 258.8 306.7 41.2-6.4 61.4-54.6 42.5-91.7-23.1-45.4 9.9-98.4 60.9-98.4h79.7c35.8 0 64.8-29.6 64.9-65.3C511.5 97.1 368.1-26.9 204.3 5zM96 320c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm32-128c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm128-64c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm128 64c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"/></svg>');
+            animation-delay: 0s;
+        }
+        
+        .paint-brush {
+            top: 70%;
+            right: 8%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%234ecdc4" d="M167.02 309.34c-40.12 2.58-76.53 17.86-97.19 72.3-2.35 6.21-8 9.98-14.59 9.98-11.11 0-45.46-27.67-55.25-34.35C0 439.62 37.93 512.07 128 512c75.86 0 128-43.77 128-120.19 0-3.11-.65-6.08-.97-9.13l-88.01-73.34zM457.89 0c-15.16 0-29.37 6.71-40.21 16.45C213.27 199.05 192 203.34 192 257.09c0 13.7 3.25 26.76 8.73 38.7l63.82 53.18c7.21 1.8 14.64 3.03 22.39 3.03 62.11 0 98.11-45.47 211.16-256.46 7.38-14.35 13.9-29.85 13.9-45.99C512 20.64 486 0 457.89 0z"/></svg>');
+            animation-delay: 0.5s;
+        }
+        
+        .crayon {
+            bottom: 10%;
+            left: 15%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%23ffe66d" d="M483.81 28.19C481.17 25.54 477.48 24 473.72 24s-7.45 1.54-10.09 4.19l-24.2 24.2c-9.7 9.69-24 11.07-36.79 6a60.33 60.33 0 0 0-65 98.72c5.09 12.73 3.68 27-6 36.75L91.52 410.26c-38.8 38.79-45.1 102-9.4 143.59a96 96 0 0 0 135.89-1.3c38.39-38.39 38.51-100.48.37-143.59L317.3 170.91c9.75-9.73 24.07-11.12 36.8-6a60.36 60.36 0 0 0 98.8-65c-5.1-12.73-3.7-27 6-36.78l24.19-24.22c5.5-5.48 8.14-12.73 8.14-20.03s-2.64-14.55-8.22-20.09zM84.13 485.15c-25.57 25.58-67 25.47-90.44-.64s-25.47-67 .64-90.44 67-25.47 90.44.64 25.47 67-.64 90.44z"/></svg>');
+            animation-delay: 1s;
+        }
+        
+        .pencil {
+            top: 30%;
+            right: 15%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%23ffa502" d="M493.25 56.26l-37.51-37.51C443.25 6.25 426.87 0 410.49 0s-32.76 6.25-45.26 18.74L12.85 371.12.15 485.34C-1.45 499.72 9.88 512 23.72 512c.89 0 1.78-.05 2.69-.15l114.14-12.61 352.38-352.38c24.99-24.99 24.99-65.51-.01-90.5l-37.51-37.51c-12.49-12.5-32.75-12.5-45.26 0zM126.09 468.68l-93.03 10.31 10.36-93.17 263.89-263.89 82.77 82.77-263.99 263.98zm344.54-344.54l-57.93 57.93-82.77-82.77 57.93-57.93c6.04-6.04 14.08-9.37 22.63-9.37 8.55 0 16.58 3.33 22.63 9.37l37.51 37.51c12.47 12.48 12.47 32.78 0 45.26z"/></svg>');
+            animation-delay: 1.5s;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.1); opacity: 0; }
+            60% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .music-note {
+            position: absolute;
+            font-size: 24px;
+            color: rgba(255,255,255,0.7);
+            animation: floatNote 4s linear infinite;
+            opacity: 0;
+        }
+        
+        @keyframes floatNote {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #556270;
+            font-size: 0.9rem;
+            animation: fadeIn 2s ease-in;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .class-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="vanta-bg"></div>
+    
+    <div class="art-supplies paint-palette"></div>
+    <div class="art-supplies paint-brush"></div>
+    <div class="art-supplies crayon"></div>
+    <div class="art-supplies pencil"></div>
+    
+    <div class="container">
+        <header>
+            <h1>CHINDAMANEE SCHOOL</h1>
+            <h2>Art Competition 2025</h2>
+            <div class="subtitle">Certificate of Participation</div>
+        </header>
+        
+        <div class="class-grid" id="classGrid">
+            <!-- Class cards will be inserted here by JavaScript -->
+        </div>
+        
+        <button class="back-btn" id="backBtn">← Back to Classes</button>
+        
+        <div class="footer">
+            Congratulations to all our talented artists! 🎨<br>
+            Certificates available for download until December 31, 2025
+        </div>
+    </div>
+    
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        // Initialize Vanta.js background
+        VANTA.FOG({
+            el: "#vanta-bg",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            highlightColor: 0xff6b6b,
+            midtoneColor: 0x4ecdc4,
+            lowlightColor: 0x556270,
+            baseColor: 0xf5f7fa,
+            blurFactor: 0.50,
+            speed: 1.50
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const bgMusic = document.getElementById('bgMusic');
+            let musicPlayed = false;
+            
+            document.addEventListener('click', function() {
+                if (!musicPlayed) {
+                    bgMusic.volume = 0.3;
+                    bgMusic.play().catch(e => console.log("Autoplay prevented:", e));
+                    musicPlayed = true;
+                }
+            });
+            
+            function createMusicNote() {
+                const notes = ['♪', '♫', '♩', '♬'];
+                const note = document.createElement('div');
+                note.className = 'music-note';
+                note.textContent = notes[Math.floor(Math.random() * notes.length)];
+                note.style.left = Math.random() * 100 + 'vw';
+                note.style.animationDuration = (3 + Math.random() * 3) + 's';
+                note.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(note);
+                
+                setTimeout(() => {
+                    note.remove();
+                }, 6000);
+            }
+            
+            setInterval(createMusicNote, 800);
+            
+            // Student data organized by class with individual links
+            const studentsByClass = {
+              "Y2 A": [
+                    {name: "Aaron Narulla", link: "https://drive.google.com/uc?export=download&id=1Fm88XbrzwG_2Co4YIaOOJoNkvKTsSjzP" },
+                    {name: "Aphiwat Meesat", link: "https://drive.google.com/uc?export=download&id=1eAkGLsHLU-DaWl3gDb6uH-2kAOpEwx6J" },
+                    {name: "Apiphu Krongtanakit", link: "https://drive.google.com/uc?export=download&id=1Wu4CHg58nSjbZUgRgfnI1rhtGxNZ-UlH" },
+                    {name: "Daral Pungunin", link: "https://drive.google.com/uc?export=download&id=1C6TazUVKcgk335tAWXvfKqL8WPhWa30y" },
+                    {name: "Martin Ardudom Ruizborja", link: "https://drive.google.com/uc?export=download&id=1nPHhMl-_KAlbjgddS2ZwD6bR1zQdAB7Q" },
+                    {name: "Nishant Harsingh", link: "https://drive.google.com/uc?export=download&id=1sHtm-HzGCUT2NsZ22G2Zjy2der5OCrJn" },
+                    {name: "Orlean Chitchumnong", link: "https://drive.google.com/uc?export=download&id=1P5i3r2dmt3RjnmuOeTEauT35v2_oMEjA" },
+                    {name: "Osman Premsiri Marin", link: "https://drive.google.com/uc?export=download&id=1X64yRyO1qGKJI0veFpwebj7R88iLfzx6" },
+                    {name: "Pann Eain Thoon", link: "https://drive.google.com/uc?export=download&id=1drK2GQ7NKmVwsC7_AJtGdEw7ScYEy_NK" },
+                    {name: "Pimchanok Watsiriseree", link: "https://drive.google.com/uc?export=download&id=1kT-WbbtWU2DjrrHQf845IMG1L_tVTaHh" },
+                    {name: "Ploychompoo Leelasathapornkul", link: "https://drive.google.com/uc?export=download&id=1sJFOnjbSmYyQjcHJpf8INiWSUwY5Qgfl" },
+                    {name: "Ploypailin Leelasathapornkul", link: "https://drive.google.com/uc?export=download&id=1Ko-shEGJdfzlg-ljbp3rhaGrkhA4Ywlq" },
+                    {name: "Prach Akkarathanyatavorn", link: "https://drive.google.com/uc?export=download&id=1mnp1-slan2Ufa99eQWeGLMl-A-QgpiLU" },
+                    {name: "Praewvanid Tongtaksin", link: "https://drive.google.com/uc?export=download&id=1eabmbbQh5J6DOUq-CuBA-G_wFm_-Mq4j" },
+                    {name: "Prem Aupariti", link: "https://drive.google.com/uc?export=download&id=1P1Sj5xcXS3sMz3sEzO4l6Ou5F2ehbcU2" },
+                    {name: "Selene  Rivera Vallve", link: "https://drive.google.com/uc?export=download&id=1NDmiivRTSQTh_kzDS-7HkDdsjliUrrYC" },
+                    {name: "Shivaay Rakesh Nair", link: "https://drive.google.com/uc?export=download&id=1L26Oee-ML-7MB3GjaBndZCEfZY0xQ9GC" },
+                    {name: "Thet Hnin Eain", link: "https://drive.google.com/uc?export=download&id=1KH8R-BMvVNU9KbjpkxKNXRGWXa5ERxvy" },
+                    {name: "Thiri Htun Thant", link: "https://drive.google.com/uc?export=download&id=1gb3FND4MHSfVx6miUfq9LEdVicwYud9s" }, 
+                    {name: "Thunrop Trivitvareekul", link: "https://drive.google.com/uc?export=download&id=1OqGOFmldtVZT61CXdhjINVZkXvOD4EeL" },
+                    {name: "Tinn Usawakultip", link: "https://drive.google.com/uc?export=download&id=1AL8x9x1uSma9_jNWCjgex29eHG5cp8uh" },
+                    {name: "Viransh Sunny Sompura", link: "https://drive.google.com/uc?export=download&id=10DqZyRepj9jZTxKPMHYBvtsRZzKFlN_k" },
+                    {name: "Waranrada Jitaree", link: "https://drive.google.com/uc?export=download&id=1oiU1hGEhXyNurS4rU-qq9qMmydSrFxOn" },
+                    {name: "Wayu Sinluea", link: "https://drive.google.com/uc?export=download&id=1BXaljrjtPofJEAQSZwdN_wT4QRAf7dyo" }
+               ],
+                "Y2 B": [
+                    {name: "Ananthachin Traikaew", link: "https://drive.google.com/uc?export=download&id=1YkqcXsn8FKy296a-Hydl6DOWCzNvCdMM" },
+                    {name: "Apichaya Asaneevutigron", link: "https://drive.google.com/uc?export=download&id=1gKwuy6n1RIbwncC3Gm5kKac3wsgJY3Le" },
+                    {name: "Athipat Jakaikrairerk", link: "https://drive.google.com/uc?export=download&id=1G9gchONaSiH7BaPuoNBHDnJT09tRWKh6" },
+                    {name: "Ayman Khan Pattan", link: "https://drive.google.com/uc?export=download&id=1Oa1JTYvEtvbPi1TaiNHYJTLw0_QdlQjg" },
+                    {name: "Cheewaporn Tangprasert", link: "https://drive.google.com/uc?export=download&id=1mI_on4SzgGpE2Eki9MvDoNbwhiKkN9l6" },
+                    {name: "Ishandeep Singh", link: "https://drive.google.com/uc?export=download&id=1IG1pF0y3yR2Ua_oC3DLSKxHAvVk4Xhoi" },
+                    {name: "Khajitmanee Wongyai", link: "https://drive.google.com/uc?export=download&id=1VGcqCvNWR0iLblQOBUfLbiMloEzCDfBZ" },
+                    {name: "Kritnara Saengkitikomol", link: "https://drive.google.com/uc?export=download&id=1iuf6mzsTNHvHf9lbVftlw1jr8A5pe-1r" },
+                    {name: "Marselina Struchkova", link: "https://drive.google.com/uc?export=download&id=1w-GaKpwV5E5_JNaw3De4drN_PslIPJPW" },
+                    {name: "Mekha Sinluea", link: "https://drive.google.com/uc?export=download&id=1yTM9d6KzJmkZjL4egrU1-_98g5zFrPp8" },
+                    {name: "Napatpong Seangprasert", link: "https://drive.google.com/uc?export=download&id=1ZEaZxKbqihp9uDZQNSbR7O_kyWKIJRzV" },
+                    {name: "Naphaphat Uasringam", link: "https://drive.google.com/uc?export=download&id=1p9cW5QjhsRNrfpg0htkX088U789Kh3Vz" },
+                    {name: "Napinya Ganmanee", link: "https://drive.google.com/uc?export=download&id=1h1fbtyqPm3q7xqpwrbTt8dkXA6MbDbBv" },
+                    {name: "Natasha Thammatharee", link: "https://drive.google.com/uc?export=download&id=1QeBsEXoEGudb8_jPAv2nQabsExTmmb4B" },
+                    {name: "Pyone Si Thu", link: "https://drive.google.com/uc?export=download&id=1GM700JCw5CVZLbsP5Y5DLVJQ0u-E-yj7" },
+                    {name: "Rinrada Sae-jiang", link: "https://drive.google.com/uc?export=download&id=1OTjs8nF6C5JWaKvvzgWpUjCnZ4JCsulc" },
+                    {name: "Sareeya Acharya", link: "https://drive.google.com/uc?export=download&id=13lSoAHbnrooxw1o0tLaQDNS1qs5L9XsL" },
+                    {name: "Warintorn Suwattanakorn", link: "https://drive.google.com/uc?export=download&id=18wIKspMsPdmNqMiruuX4-qjAc7OCTTZN" },
+                    {name: "Warongwit Tangprasert", link: "https://drive.google.com/uc?export=download&id=1cp40NERLeLGJt30CptN8kHgh33wHXMZf" },
+                    {name: "Yoon Myat Theingi", link: "https://drive.google.com/uc?export=download&id=18BCCvtR4f0_Zb_7jH9Ap9KiR97K136qn" },
+                    {name: "Zaara Nauman", link: "https://drive.google.com/uc?export=download&id=1i16r9DNPX_GdCD1YSyDBJdeRU9fu6lkp" }
+               ], 
+                "Y3 A": [
+                    {name: "Aaryav Vaishnav", link: "https://drive.google.com/uc?export=download&id=1IcF-EZ3U5QJBpl7zUmvKHGzxYUzNiO7e"},
+                    {name: "Akira Watthanawate", link: "https://drive.google.com/uc?export=download&id=14q9Jhc4o0EGlAvm04HitqWQWru6C8k9g"},
+                    {name: "Ali Arif Parilti", link: "https://drive.google.com/uc?export=download&id=1x-KbxAPA6YrFGu1Ej7kpqglKumuljEmR"},
+                    {name: "Alisa Waewbandhit", link: "https://drive.google.com/uc?export=download&id=1YmKD5fu_REsTqDYCo3v_ook3nIM6gUw_"},
+                    {name: "Avalyn Luengcharoennugoon", link: "https://drive.google.com/uc?export=download&id=1e1tFLfuolGMjdxU5EYTXqOtSEK8pJLJG"},
+                    {name: "Ifza Fatima", link: "https://drive.google.com/uc?export=download&id=13zmnrsNsE510KoozNqOrMH86FTCqSsBj"},
+                    {name: "Julian Win Khant Paing Lin", link: "https://drive.google.com/uc?export=download&id=1BHifCQsu9qmcnNjhDRQj5BDyHLmG5op1"},
+                    {name: "Kanyawee You", link: "https://drive.google.com/uc?export=download&id=14B1yp8bY3lkYJDfdhL8Av9A__Ln68ajX"},
+                    {name: "Khant Bhone Nay Thar", link: "https://drive.google.com/uc?export=download&id=1PNoV7uMMLjiwNnfev777_nAlgNlps9NN"},
+                    {name: "Khanthicha Kijsrisakul", link: "https://drive.google.com/uc?export=download&id=1EX7J9DMXp-EmetRzpmauOYAnyKZPhlGc"},
+                    {name: "Larissa Goeke", link: "https://drive.google.com/uc?export=download&id=1k5ZvzUyO1EGhXm8kNtJiUPoU0UyX639I"},
+                    {name: "Lin Yaung Moe Myint", link: "https://drive.google.com/uc?export=download&id=1Bhg32OnqZnj4PB1nKYBzvOcRymJeUAOB"},
+                    {name: "Lwin Phone Khant", link: "https://drive.google.com/uc?export=download&id=1nVsZcfOEST0Wj30YZerW7JSm5ZWSJ2KJ"},
+                    {name: "Mukda Temwareewan", link: "https://drive.google.com/uc?export=download&id=1sWEDtGedRigFPeear1V8OkY2mUWUbmib"},
+                    {name: "Panyada Tippayatus", link: "https://drive.google.com/uc?export=download&id=1cvHZ1f-EuAQFRYOZplDhoOd7fI19P6vd"},
+                    {name: "Puttiprach Bosap", link: "https://drive.google.com/uc?export=download&id=1Z_GrMByZTfVSq7lUvh80SRM2WACiPiGf"},
+                    {name: "Ryan Ratchanon Peters", link: "https://drive.google.com/uc?export=download&id=1zP_oBbLxrpq7Wm64A7FH0XpxvKGAzcCB"},
+                    {name: "Tay Zar Linn", link: "https://drive.google.com/uc?export=download&id=12ruGmxr01Ct8y6ZUs9e4UVcldKnylE0y"},
+                    {name: "Urassaya Sathirawattananon", link: "https://drive.google.com/uc?export=download&id=1voGB-_VBvJRoI3usqAXDv1egIHPHX3GT"}
+               ],
+                "Y3 B": [
+                   {name: "Aviraaj Chand", link: "https://drive.google.com/uc?export=download&id=13LYUqtFA5ap38tDeAxBTl7zbgEDiw8xw"},
+                   {name: "Bhichayarak Jakaikrairerk", link: "https://drive.google.com/uc?export=download&id=1YvpJS-dQjjyRV4CbzOh1VzQlEyPqeGVn"},
+                   {name: "Chayaporn Chiangjong", link: "https://drive.google.com/uc?export=download&id=1nSBAD3oxIOf25rRSkm7EzIss1jkKOJ1A"},
+                   {name: "Chit Min Thar", link: "https://drive.google.com/uc?export=download&id=1R5az1tFiSrWW6tSzEC6VeBN6icwnP7Wa"},
+                   {name: "Hijab Abdullah", link: "https://drive.google.com/uc?export=download&id=18t_1bu8yCNpXOzBdblAdiYKt4BZnxOSd"},
+                   {name: "Jarinya Chantorn", link: "https://drive.google.com/uc?export=download&id=1mbOLrITxWQykT6NHwNQa_nkGyOvJS6IS"},
+                   {name: "Jewel Htut", link: "https://drive.google.com/uc?export=download&id=1uydGMc-CzIUHAd-AV_SHmOEgb8hP87Hg"},
+                   {name: "Phu Tuta Po", link: "https://drive.google.com/uc?export=download&id=1f82sCUMKau6fdUZ3IV8D2nRHG6bqg6A6"},
+                   {name: "Pidtiphat Jaturapornpinyo", link: "https://drive.google.com/uc?export=download&id=1TZ0ZF8nNwPpUZqaZI9OboZKbXiPTNS-H"},
+                   {name: "Pornrapat Chaicharoenpat", link: "https://drive.google.com/uc?export=download&id=1X4VmdEkdE8MfH96-wzdJF2UUjgmStr4A"},
+                   {name: "Rada Chuenkwanlert", link: "https://drive.google.com/uc?export=download&id=1AxlrbCPipi_jORtSCbUwFVVsElAjYAb6"},
+                   {name: "Rada Puengmongkholchaikij", link: "https://drive.google.com/uc?export=download&id=1bq_jF4cmczQVP9YxuCQ83V0TrNS_Xov0"},
+                   {name: "Rozi Rokhani Bobilova", link: "https://drive.google.com/uc?export=download&id=1-6YjEOkQPHJX6AIqDqPTW4nueS-U9gaG"},
+                   {name: "Thanida Kusalanan", link: "https://drive.google.com/uc?export=download&id=1dMJ4Y1yjehGJh29DSJ95h9nXpKI8ssip"},
+                   {name: "Theeradham Krittiemmek", link: "https://drive.google.com/uc?export=download&id=1orLUyDeFrPDwPpVu9fq-FQomcqJdFYdL"},
+                   {name: "Yada Puengmongkholchaikij", link: "https://drive.google.com/uc?export=download&id=1Wx2lJJS6Ik3gt6P_5lEMPSmPBuLKAqKX"},
+                   {name: "Zay Ya Bhone", link: "https://drive.google.com/uc?export=download&id=1AIaa807-esq4yNzVmU0RKrwkbdE3aLmB"}
+              ],
+               "Y4 A": [
+                   {name: "Anawin Sattayavutipong", link: "https://drive.google.com/uc?export=download&id=1t5_RRfozoYkCeKgmn78-4AuYOcaNRoxg"},
+                   {name: "Arinda Wongpasuk", link: "https://drive.google.com/uc?export=download&id=1JeSWyvDnk--P956iE16AfxitvhNjI785"},
+                   {name: "Chanathan Jitaree", link: "https://drive.google.com/uc?export=download&id=1tJJKhWqiS7QbWh5ie7pUCSYETqp6PKpZ"},
+                   {name: "Isabel Thassanatarakorn Gonzales", link: "https://drive.google.com/uc?export=download&id=19TF_kqIRF43wheBqGksncptIL0KtkaV9"},
+                   {name: "Jirachaya Tangyusuk", link: "https://drive.google.com/uc?export=download&id=1Gwrt8zmh6rT9fCAGQ6ltl5AiGuXhTCia"},
+                   {name: "Kirin Koder", link: "https://drive.google.com/uc?export=download&id=1X9v2RYVnVsaY9aCxFGyI3aGSk9-W-eCk"},
+                   {name: "Kritsakorn Sakolnuruk", link: "https://drive.google.com/uc?export=download&id=1Nq2qgeYi56xXkZmylkUCHk7-C0hzXjAn"},
+                   {name: "Lin Lat Eain Si", link: "https://drive.google.com/uc?export=download&id=17dPFzKeEmRo-G-_w0Jdn99Fg8aiFedCM"},
+                   {name: "Mohamed Arham Sheik Mohamed Niyas", link: "https://drive.google.com/uc?export=download&id=15UEkrYA2su9fTvNQ-O0TmZjC11sswHC1"},
+                   {name: "Nada Khundureh", link: "https://drive.google.com/uc?export=download&id=19b2yIf9kkJP7VntZf1OqzyseJTPAzRUp"},
+                   {name: "Nichchamon Suchahiran", link: "https://drive.google.com/uc?export=download&id=1fJ4NFyI-LXNivd12tBw0OXTJ3YnwLWT3"},
+                   {name: "Ploychompoo Siriphunatad", link: "https://drive.google.com/uc?export=download&id=12QRwoNmnf33tTJYZ9FTnlJ4OSkYJX7u4"},
+                   {name: "Pokpong Apivessa", link: "https://drive.google.com/uc?export=download&id=1OkNevhGN4tqKA9ZFXgT1jkKsV3wsLUt1"},
+                   {name: "Rahu Kadka", link: "https://drive.google.com/uc?export=download&id=1qP_6r9HrrTToKhM73YtS8fbZ_6q_9ERj"},
+                   {name: "Vasuthep Worasetthayanon", link: "https://drive.google.com/uc?export=download&id=1Xlul05hz_BTpxr_aAdORLYX_Obx-JAND"},
+                   {name: "Viennanarin Inchandr", link: "https://drive.google.com/uc?export=download&id=1rm91Pz7B1CHjIuLyUH70EhEucvvbBSwg"},
+                   {name: "Yindee Soontornprapee", link: "https://drive.google.com/uc?export=download&id=1qQH81nIMZ481i7Plif7xwTnM4kHyZbf6"}
+              ],
+               "Y4 B": [
+                   {name: "Adheena Mohamed Sulaiman", link: "https://drive.google.com/uc?export=download&id=1vmgu755Mp4bFpGuTiUAUsIGPsTzBDiCP"},
+                   {name: "Cassius Kasimov", link: "https://drive.google.com/uc?export=download&id=1Woip-srswovZ9F5j7bQURzi6nVmkmdKz"},
+                   {name: "Eaint Yoon Amara Maung", link: "https://drive.google.com/uc?export=download&id=1xXAaLNHFsclCq38Cgf5BaBaDH26kwgIk"},
+                   {name: "Hari Kang", link: "https://drive.google.com/uc?export=download&id=1xju3vmOYsSY17Mt1XWTrZwAtg-soBJ4o"},
+                   {name: "Isabella Piedrahita", link: "https://drive.google.com/uc?export=download&id=1zMaO9Pv8ZzlgBgCMDc98OnWe55jnEpbh"},
+                   {name: "Itsaree Potipipit", link: "https://drive.google.com/uc?export=download&id=1Hxj64O7T28ctAc5ag-TrsGevchfGqh7q"},
+                   {name: "Jahongir Sarvar Ugli Merjonov", link: "https://drive.google.com/uc?export=download&id=1yYStrEdxSZ_hprFqgN7vgLpfiH8ic7zz"},
+                   {name: "Kanruethorn Saengkitipornsakul", link: "https://drive.google.com/uc?export=download&id=1KBv73wmE2Xis4GTOR2J47ZA8CzRptYCV"},
+                   {name: "Kaung Set Lwin", link: "https://drive.google.com/uc?export=download&id=1SzRvV0P-0MoAPSG7wMIQfyb1Cj3wYoSR"},
+                   {name: "Mansur Makhsat", link: "https://drive.google.com/uc?export=download&id=1iwJLK1jTBVnEz0-PApLDQESw5q1wJF1c"},
+                   {name: "Natthapich Govisittinan", link: "https://drive.google.com/uc?export=download&id=13Tr5R5MN_eBWGTp7-jCosMXQOWCO4UoP"},
+                   {name: "Nitik Motwani", link: "https://drive.google.com/uc?export=download&id=1_Ar6v0jxLp_PEfywimar7Uj7a1vYn8rx"},
+                   {name: "Pitchayabhorn Amornvanasan", link: "https://drive.google.com/uc?export=download&id=1HpoRfR3b8WIeTk5XFxnFaQsB6gRWsgwL"},
+                   {name: "Safa Shahzad", link: "https://drive.google.com/uc?export=download&id=1nfzK5KzglxusbyZTgiAxlmvpFJILluau"},
+                   {name: "Saw Nyan Linkar Lynn", link: "https://drive.google.com/uc?export=download&id=1oBj6WoccxMUs87zBY39XTdvveZA4OgBL"},
+                   {name: "Sithu Moe Myint", link: "https://drive.google.com/uc?export=download&id=1I90hLbuL95Hsi1qLGgtVO_mPuRPrfE8_"},
+                   {name: "Zahro Sarvar Kizi Merjonova", link: "https://drive.google.com/uc?export=download&id=1qQH81nIMZ481i7Plif7xwTnM4kHyZbf6"}
+              ],
+               "Y5 A": [
+                   {name: "Anisara Gulati", link: "https://drive.google.com/uc?export=download&id=1ndooxF-a0cfnyA--P51gcX3lqZEoRxSP"},
+                   {name: "Anisha Gulati", link: "https://drive.google.com/uc?export=download&id=1Bx9HchTAe-sZKEvvM96OAjfrm9__YQlE"},
+                   {name: "Arinlada Yiamsawat", link: "https://drive.google.com/uc?export=download&id=17sCb2UK_0QCgE4Kfwd0ii0dYLknsgm5k"},
+                   {name: "Avarin Sasawattecha", link: "https://drive.google.com/uc?export=download&id=1oKN45VxMkg6wXovmjw9brBGQEIL8V_RH"},
+                   {name: "Chatchasa Sae-ueng", link: "https://drive.google.com/uc?export=download&id=1sVqfvXamLwnqQOWU_xGeJR8KWQcffXIR"},
+                   {name: "Daris Saengprasop", link: "https://drive.google.com/uc?export=download&id=1CqNdyiPRAdEB87BrQfk7gyfA8rjILcJd"},
+                   {name: "Jakkrapat Chaicharoenpat", link: "https://drive.google.com/uc?export=download&id=1YtVrl692y4VkEyVhxZBHaPmezLo_VsCF"},
+                   {name: "Natnicha Somsongkul", link: "https://drive.google.com/uc?export=download&id=1-nQVC6EsFPimpEQd57JsOPwLzGczCVyR"},
+                   {name: "Panissara Missarat", link: "https://drive.google.com/uc?export=download&id=1agJ6Osfx3aKCRF40rEcNt755-gHglDa3"},
+                   {name: "Phothiphat Piyadit", link: "https://drive.google.com/uc?export=download&id=1ZLksGQDeeRIwcE0C_lkou8zJyjj85YG-"},
+                   {name: "Pimnara Chairattanathananon", link: "https://drive.google.com/uc?export=download&id=12VNFsjnLcFV60tfLe35-FQY9GWAukUEW"},
+                   {name: "Sira Jintaviwatwong", link: "https://drive.google.com/uc?export=download&id=1Ig7CHrzqAvSuQAE_0fk_48ySknmYD82R"},
+                   {name: "Yindee Bindusmita", link: "https://drive.google.com/uc?export=download&id=1YkbC0E5F0ggDGchu61zuWTvaBM159-Fn"}
+              ],
+               "Y5 B": [
+                   {name: "Artit Sayanhansa", link: "https://drive.google.com/uc?export=download&id=1_QkKmMd6fR81N-6_fv4C8cAlftgU8Apb"},
+                   {name: "Aunchita Thongsa", link: "https://drive.google.com/uc?export=download&id=1z6t1AqL_GpU9SkSEF4e9NnHWtIoNzzN7"},
+                   {name: "Chawin Usawakultip", link: "https://drive.google.com/uc?export=download&id=1qu4H6VwRV6soPb9CX-atNFtaePkVWhjv"},
+                   {name: "Darin Pasit Swinth", link: "https://drive.google.com/uc?export=download&id=1MHnQmYzjsHJQcMDOfx4WC9Ie_ZADo2Vu"},
+                   {name: "Elis Yay", link: "https://drive.google.com/uc?export=download&id=1Gi8oQEBiactEhl9UA5MEgFKgTPEtMIvt"},
+                   {name: "Esra Yay", link: "https://drive.google.com/uc?export=download&id=1nqBrthZHisBhHxxk5Thun42O68IsR8kE"},
+                   {name: "Itthipat Prompongsri", link: "https://drive.google.com/uc?export=download&id=1nmwPX5EqpHOm8vsTnASpdN47VQ5uOT23"},
+                   {name: "May Gone Sint Thu", link: "https://drive.google.com/uc?export=download&id=1NtIKkk-fQXDVGrJu-V8c8miubY3bsnu1"},
+                   {name: "Naralak You", link: "https://drive.google.com/uc?export=download&id=1Xr0bV-JeV-2L0YMcEQ5Csk3ciGp6Kbaz"},
+                   {name: "Natharat Akarawong", link: "https://drive.google.com/uc?export=download&id=1SJraCkQ87c5AJWHqQkS4JAOtf8PsinHy"},
+                   {name: "Phakeen Usawakultip", link: "https://drive.google.com/uc?export=download&id=1cT8q7qKJCDBFYuEHo7yBGlI11gT45o8V"},
+                   {name: "Phurin Siriwithayarak", link: "https://drive.google.com/uc?export=download&id=1Jfz9klfnr-cJIYvzCyIsBSvDVjh__y2P"},
+                   {name: "Pimranis Pannora", link: "https://drive.google.com/uc?export=download&id=1sL3f_ttOgsHdJXHz2Xf1x0aZV51meRiI"},
+                   {name: "Samitanan Ifeanyichukwu", link: "https://drive.google.com/uc?export=download&id=1-9a-3AY5RdkKNj-LcXmwm5loizQwQxB-"},
+                   {name: "Sirapassorn Asaneevutigron", link: "https://drive.google.com/uc?export=download&id=1q6mMyRl-HdDHzQKYKQBH4zyzSVrTCJuo"},
+                   {name: "Sukhman Kaur Dole", link: "https://drive.google.com/uc?export=download&id=1skkwHI9Bnak7Nlpky5_kLWLKS6nnPUeO"},
+                   {name: "Tanoo Boonpornpichet", link: "https://drive.google.com/uc?export=download&id=1UDcl9__Gq8gSU1lXXBq68gg9t8TKjJN9"},
+                   {name: "Thunyapornpun Vorakittisophon", link: "https://drive.google.com/uc?export=download&id=1FUyZn5vsYhwEoOR-qmPC-qipCKYv-irs"},
+                   {name: "Wildan Khundureh", link: "https://drive.google.com/uc?export=download&id=13WbGPPNM9oGhPxKSMNjO_K8ddT5NqWFi"}
+              ],
+               "Y5 C": [
+                   {name: "Archira Pichayapa", link: "https://drive.google.com/uc?export=download&id=1sbzm-P7XjH4j4flvS-m67Vfp-ipbPvph"},
+                   {name: "Arham Khan Pattan", link: "https://drive.google.com/uc?export=download&id=1v3d6LK6hYdZOyE8HSH_uIpufBk6qfapl"},
+                   {name: "Auu Thu Cheal", link: "https://drive.google.com/uc?export=download&id=1fFI_EckJU7-JVo_HffN8kWFHmDJ0tEkP"},
+                   {name: "Chirayu Tamra", link: "https://drive.google.com/uc?export=download&id=1wbI_TUs1mje4Yg6e4lBfi20xyIqBOW-t"},
+                   {name: "Efat Hossain Khan", link: "https://drive.google.com/uc?export=download&id=1neuJvGcz0nET2Re_zmXrARREezQQe-3S"},
+                   {name: "Ibrahim Gibran Verdian", link: "https://drive.google.com/uc?export=download&id=1DjJpAZ_77fOy-n0xV4yCtmZB5hHoBnji"},
+                   {name: "Liam Green", link: "https://drive.google.com/uc?export=download&id=1ZWYVr65Xcxu5gqQqmmEHZBCE-K9IgNoy"},
+                   {name: "Lynn Yaung Khit", link: "https://drive.google.com/uc?export=download&id=1Hav-4W-GBZlAhH5DO-pVAq3tZrZMFq91"},
+                   {name: "Mabel Htut", link: "https://drive.google.com/uc?export=download&id=1gQ2V3aGBOPpBCIA5QmlOX-Cyb1MoQO8X"},
+                   {name: "Nan Thoon Htake Htar San", link: "https://drive.google.com/uc?export=download&id=16Y1syopXFgsAwuZlKbWEPlmzdigGyLVo"},
+                   {name: "Nuttharputh Jirutthawong", link: "https://drive.google.com/uc?export=download&id=16FarTNzmCG5EqyZyHuPMrcwHNw48qDm9"},
+                   {name: "Nyan Thuta Linn", link: "https://drive.google.com/uc?export=download&id=1QHZ9_G_cqZfFifnV2Lyn6O9O5scUYUrx"},
+                   {name: "Paing Hmue Khit", link: "https://drive.google.com/uc?export=download&id=1V9e-DHeAPmAgRufjYp_LaAi7ORDIcRTU"},
+                   {name: "Patnirin Arpajamjarat", link: "https://drive.google.com/uc?export=download&id=1w_JYCmSBSZzJh25FL0Uoi2d-XEghVSeI"},
+                   {name: "Ryan Sreejith", link: "https://drive.google.com/uc?export=download&id=1KIrQPk8IX2thhsB-BmVh62Md5rbxhcM4"},
+                   {name: "San Wint Htal", link: "https://drive.google.com/uc?export=download&id=1gUskRWJI1_vLAiNNHAZfYkMA398Fg96X"},
+                   {name: "Su Ei Yati Kyaw", link: "https://drive.google.com/uc?export=download&id=1RQZtp6PFR-rnGjpXin1I6k-RC5YDXARl"},
+                   {name: "Su Yatii Naing", link: "https://drive.google.com/uc?export=download&id=1_85rRs4KSGiyRcpDzdNnSZDii7w0Y_iY"},
+                   {name: "Thet Hnin San", link: "https://drive.google.com/uc?export=download&id=17FAyme375JJ8aZ1cIwWnrqA9rqfjDtyq"},
+                   {name: "Yarsu Kaung Sat", link: "https://drive.google.com/uc?export=download&id=14gT0IJf3sypLN_NTgCdsNA6iZFYNy4ax"},
+                   {name: "Yarsu Saung Sat", link: "https://drive.google.com/uc?export=download&id=1e7udjIwlizJzeLfhC7o0D9Cs81dykgNt"},
+                   {name: "Zaynab Sarvar Kizi Merjonova", link: "https://drive.google.com/uc?export=download&id=17pbrYPMc3j2TncGPEBuUvE0bhuopoHfz"}
+              ],
+               "Y6 A": [
+                   {name: "Aditi Deo", link: "https://drive.google.com/uc?export=download&id=1hj5hr28gTPpJtSektsajEaO2aRwO2oi1"},
+                   {name: "Hein Khant Maung", link: "https://drive.google.com/uc?export=download&id=1P2zhpacUeT3ibvd4CR2P3v62Tum1pPIl"},
+                   {name: "Htet Su Linkar", link: "https://drive.google.com/uc?export=download&id=1EoWoZlw1gqr39lLwT3oJDZpQErDwzFAz"},
+                   {name: "Jinnicha Janjamroon", link: "https://drive.google.com/uc?export=download&id=1Em3XDd0PGf7FGkR6aG6249dY8vQgGTXv"},
+                   {name: "Kaung Say Htun", link: "https://drive.google.com/uc?export=download&id=1XCeJfHslnSBxsxFfM5sUrVPJC9Ygx_Tm"},
+                   {name: "Khant Nyar Kyaw Zin", link: "https://drive.google.com/uc?export=download&id=1fDfNdxkkez_3bOJGFiXUIygSPOsqqHGY"},
+                   {name: "Kris Khanijou", link: "https://drive.google.com/uc?export=download&id=1VgH9s7KP7WTGHnaRpfu5tYIwATvkdf94"},
+                   {name: "Krit Gulati", link: "https://drive.google.com/uc?export=download&id=1ajU6IeNTbHGOG-QBqJaHzyIWthYLSc_-"},
+                   {name: "Phatharadit Budhnarakul", link: "https://drive.google.com/uc?export=download&id=189KO6xDtHJ7ZwelbMRT3can_0bocmX7R"},
+                   {name: "Primrata Nathong", link: "https://drive.google.com/uc?export=download&id=11iqkJAp31sPVg5zEf6xZUzrdy136p_YR"},
+                   {name: "Sarocha Channual", link: "https://drive.google.com/uc?export=download&id=1nFjV2Q5P32JqwbDUs_vvoj-uuu5Y91rA"},
+                   {name: "Selime Hava Bas", link: "https://drive.google.com/uc?export=download&id=1S2Q1MJYv60HQJp2ZFRHhDnLddvsVXf8W"},
+                   {name: "Shlok Chand", link: "https://drive.google.com/uc?export=download&id=105GpQDfi18PR2oK5qmWqw6gK0xNrWSJ1"},
+                   {name: "Sumaiya Hossain", link: "https://drive.google.com/uc?export=download&id=1s0U0LAXjAqpPHoWgVy_lnxb1CZ7DmV49"},
+                   {name: "Theingi Aung", link: "https://drive.google.com/uc?export=download&id=1KmaCFYw_8tpgrBqja0-Jn36IOS4X4uS-"},
+                   {name: "Thevathep Sachdev", link: "https://drive.google.com/uc?export=download&id=1_yCIfT_tzTsfwUdza7qQpLhCkcYrZ6IQ"},
+                   {name: "Vedat Koca", link: "https://drive.google.com/uc?export=download&id=1firjUhqVQoC8s7jEccNfwiht4xEEEcLg"},
+                   {name: "Zan Ye Htet", link: "https://drive.google.com/uc?export=download&id=195BLsB9bj0OjooQuK-i8xZSfUEhNawbf"}
+              ],
+               "Y6 B": [ 
+                   {name: "Alexei Ray Yeagershporin", link: "https://drive.google.com/uc?export=download&id=1VZd-E3eZEmMtxLaIKTNJdYF0C065FA8p" },
+                   {name: "Amalia Bashlykova", link: "https://drive.google.com/uc?export=download&id=1fMlOQ2IynNOR3kHpu1Z2thNyBLuvXZPg" },
+                   {name: "Areeyah Avageline Dulude", link: "https://drive.google.com/uc?export=download&id=1xQetY9StgF1WXcE1QFt12LNpltovEyOc" },
+                   {name: "Chonnaphat Thumrat", link: "https://drive.google.com/uc?export=download&id=1jYAaRgLR5JFDziFXJy-x6GHapk9A8RpO" },
+                   {name: "Hana  Marie Hamill", link: "https://drive.google.com/uc?export=download&id=1vi6rbEtmCMUrIIXhOwRXpqWSDfWgB4mV" },
+                   {name: "Intouch Rampai", link: "https://drive.google.com/uc?export=download&id=1QRx99ChskVHJLjsgOvBYKkjj1liYj2Bq" },
+                   {name: "Jessada Odlin", link: "https://drive.google.com/uc?export=download&id=1cWFUbCQwC8UhvcVCLaYcqhInINf_owWx" },
+                   {name: "Kevin Koder", link: "https://drive.google.com/uc?export=download&id=1J9bWTI3rFeYv6DPiLkgGwzWaWy998D-1" },
+                   {name: "Mehmet  Naci Parilti", link: "https://drive.google.com/uc?export=download&id=16qDndT-G1Vcjw6aiizhgjMMuamtQK-B-" },
+                   {name: "Panyaraht Ifeanyichukwu", link: "https://drive.google.com/uc?export=download&id=1AHj0sHVVE8DE45baiZxKt3jC1IUp9FKn" },
+                   {name: "Pareena Sangroula", link: "https://drive.google.com/uc?export=download&id=1Pbjm9Qt1WbovCpN4bp483DA_3QLiIDCE" },
+                   {name: "Praewpannarai Tangprasert", link: "https://drive.google.com/uc?export=download&id=1JA1vL5sh9UhA2ljWQSR3A5BpxkvJ5rzm" },
+                   {name: "Punchida Angsukulthorn", link: "https://drive.google.com/uc?export=download&id=131coIGuutjCVTlfUdh6ue2JAe4443SnM" },
+                   {name: "Qian Qian Zhou", link: "https://drive.google.com/uc?export=download&id=1ysuDx9h3cZwx2YhSPJkYWxoqvoGwwWTN" },
+                   {name: "Sophitthanatcha Chaviengpop", link: "https://drive.google.com/uc?export=download&id=1jYXGGeoFD7rxh9tnxUHmVCgXyYZUTGCV" },
+                   {name: "Tanasa Chuenkwanlert", link: "https://drive.google.com/uc?export=download&id=1H8Ysk6GZulu8BpfLWD9JXgMWOVKBurM9" },
+                   {name: "Tanut Puengmongkholchaikij", link: "https://drive.google.com/uc?export=download&id=1R8wH0QPRmOYJHUeR1v-y_TCjok5gw5E7" },
+                   {name: "Tawee Namnanthasith", link: "https://drive.google.com/uc?export=download&id=1BZ1E-wAcDSzZP7utMEvJe5hDL5XDxiaD" },
+                   {name: "Wipada Sakolnuruk", link: "https://drive.google.com/uc?export=download&id=1ca0w76bjkKPplaYSLAgUTx5HzOxG9qVp" }
+                ],
+                "Y6 C": [
+                   {name: "Alexei Ray Yeagershporin", link: "https://drive.google.com/uc?export=download&id=1VZd-E3eZEmMtxLaIKTNJdYF0C065FA8p" },
+                   {name: "Amalia Bashlykova", link: "https://drive.google.com/uc?export=download&id=1fMlOQ2IynNOR3kHpu1Z2thNyBLuvXZPg" },
+                   {name: "Areeyah Avageline Dulude", link: "https://drive.google.com/uc?export=download&id=1xQetY9StgF1WXcE1QFt12LNpltovEyOc" },
+                   {name: "Chonnaphat Thumrat", link: "https://drive.google.com/uc?export=download&id=1jYAaRgLR5JFDziFXJy-x6GHapk9A8RpO" },
+                   {name: "Hana  Marie Hamill", link: "https://drive.google.com/uc?export=download&id=1vi6rbEtmCMUrIIXhOwRXpqWSDfWgB4mV" },
+                   {name: "Intouch Rampai", link: "https://drive.google.com/uc?export=download&id=1QRx99ChskVHJLjsgOvBYKkjj1liYj2Bq" },
+                   {name: "Jessada Odlin", link: "https://drive.google.com/uc?export=download&id=1cWFUbCQwC8UhvcVCLaYcqhInINf_owWx" },
+                   {name: "Kevin Koder", link: "https://drive.google.com/uc?export=download&id=1J9bWTI3rFeYv6DPiLkgGwzWaWy998D-1" },
+                   {name: "Mehmet  Naci Parilti", link: "https://drive.google.com/uc?export=download&id=16qDndT-G1Vcjw6aiizhgjMMuamtQK-B-" },
+                   {name: "Panyaraht Ifeanyichukwu", link: "https://drive.google.com/uc?export=download&id=1AHj0sHVVE8DE45baiZxKt3jC1IUp9FKn" },
+                   {name: "Pareena Sangroula", link: "https://drive.google.com/uc?export=download&id=1Pbjm9Qt1WbovCpN4bp483DA_3QLiIDCE" },
+                   {name: "Praewpannarai Tangprasert", link: "https://drive.google.com/uc?export=download&id=1JA1vL5sh9UhA2ljWQSR3A5BpxkvJ5rzm" },
+                   {name: "Punchida Angsukulthorn", link: "https://drive.google.com/uc?export=download&id=131coIGuutjCVTlfUdh6ue2JAe4443SnM" },
+                   {name: "Qian Qian Zhou", link: "https://drive.google.com/uc?export=download&id=1ysuDx9h3cZwx2YhSPJkYWxoqvoGwwWTN" },
+                   {name: "Sophitthanatcha Chaviengpop", link: "https://drive.google.com/uc?export=download&id=1jYXGGeoFD7rxh9tnxUHmVCgXyYZUTGCV" },
+                   {name: "Tanasa Chuenkwanlert", link: "https://drive.google.com/uc?export=download&id=1H8Ysk6GZulu8BpfLWD9JXgMWOVKBurM9" },
+                   {name: "Tanut Puengmongkholchaikij", link: "https://drive.google.com/uc?export=download&id=1R8wH0QPRmOYJHUeR1v-y_TCjok5gw5E7" },
+                   {name: "Tawee Namnanthasith", link: "https://drive.google.com/uc?export=download&id=1BZ1E-wAcDSzZP7utMEvJe5hDL5XDxiaD" },
+                   {name: "Wipada Sakolnuruk", link: "https://drive.google.com/uc?export=download&id=1ca0w76bjkKPplaYSLAgUTx5HzOxG9qVp" }
+               ],
+            };
+
+            // Create class cards
+            const classGrid = document.getElementById('classGrid');
+            const backBtn = document.getElementById('backBtn');
+            
+            Object.keys(studentsByClass).forEach(className => {
+                const classCard = document.createElement('div');
+                classCard.className = 'class-card';
+                classCard.innerHTML = `<h3>${className}</h3>`;
+                
+                const studentList = document.createElement('div');
+                studentList.className = 'student-list';
+                
+                studentsByClass[className].forEach(student => {
+                    const studentItem = document.createElement('div');
+                    studentItem.className = 'student-item';
+                    studentItem.textContent = student.name;
+                    studentItem.addEventListener('click', () => {
+                        createConfetti();
+                        window.open(student.link, '_blank');
+                    });
+                    studentList.appendChild(studentItem);
+                });
+                
+                classCard.appendChild(studentList);
+                
+                classCard.addEventListener('click', function(e) {
+                    if (e.target === this || e.target === this.querySelector('h3')) {
+                        document.querySelectorAll('.class-card').forEach(card => {
+                            card.style.display = 'none';
+                        });
+                        this.style.display = 'block';
+                        this.querySelector('.student-list').style.display = 'block';
+                        backBtn.style.display = 'block';
+                        
+                        this.style.transform = 'scale(1.05)';
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1)';
+                        }, 300);
+                    }
+                });
+                
+                classGrid.appendChild(classCard);
+            });
+            
+            backBtn.addEventListener('click', function() {
+                document.querySelectorAll('.class-card').forEach(card => {
+                    card.style.display = 'block';
+                    card.querySelector('.student-list').style.display = 'none';
+                });
+                this.style.display = 'none';
+            });
+            
+            function createConfetti() {
+                const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#ffa502', '#556270'];
+                
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.width = (5 + Math.random() * 10) + 'px';
+                    confetti.style.height = (5 + Math.random() * 10) + 'px';
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    
+                    const rotation = Math.random() * 360;
+                    confetti.style.transform = `rotate(${rotation}deg)`;
+                    
+                    const animationDuration = (1 + Math.random() * 3) + 's';
+                    confetti.style.animation = `fall ${animationDuration} linear forwards`;
+                    
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes fall {
+                        to {
+                            transform: translateY(100vh) rotate(360deg);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        });
+    </script>
+</body>
+</html>
